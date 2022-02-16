@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.test;
 
 import com.example.demo.doc.entity.Document;
 import com.example.demo.doc.service.DocumentService;
