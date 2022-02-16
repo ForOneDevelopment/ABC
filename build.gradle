@@ -1,0 +1,45 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.3'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+	maven { url 'https://jitpack.io' }
+	maven { url 'https://maven.aliyun.com/repository/public' }
+	maven { url 'https://maven.aliyun.com/repository/central' }
+	maven { url 'https://maven.aliyun.com/repository/google' }
+	maven { url 'https://maven.aliyun.com/repository/public' }
+	maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+	google()
+}
+
+dependencies {
+	//springboot启动组件
+	implementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	//所需web注释等组建
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web-services'
+	//网页寻址
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	//数据库
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'mysql:mysql-connector-java'
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0'
+	implementation 'com.alibaba:druid-spring-boot-starter:1.1.14'
+	//测试
+	testImplementation group: 'junit', name: 'junit', version: '4.12'
+	//日志
+	implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
+	implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
