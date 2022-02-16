@@ -1,4 +1,4 @@
-package com.example.demo.example;
+package com.example.demo.example.service;
 
 import com.example.demo.example.entity.Student;
 
