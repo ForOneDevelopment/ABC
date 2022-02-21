@@ -34,10 +34,14 @@ public class DocumentServiceImpl implements DocumentService {
     public void add(Document document) {
 
         int beginVersionId = 1;
-//        String operatorName = "admin";
+        int lastDocumentId;
 
         Document lastDocument = documentMapper.getLastDocument();
-        int lastDocumentId = lastDocument.getId();
+        if (lastDocument == null){
+            lastDocumentId = 0;
+        }else{
+            lastDocumentId = lastDocument.getDocumentId();
+        }
 
         // 设置需要自动生成的属性
         document.setDocumentId(lastDocumentId+1); //上传文件document id每次加1
@@ -61,9 +65,17 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public void update(Document document) {
-        int lastVersionId = document.getVersionId();
+        int Id = document.getId();
+        Document prevDocument = documentMapper.selectByPrimaryKey(Id); // 先获取该编辑对象的原始版本
+        // 编辑后的version id需加1
+        int lastVersionId = prevDocument.getVersionId();
         document.setVersionId(lastVersionId + 1);
-        documentMapper.updateByPrimaryKeySelective(document);
+        // 赋值其他非自动生成信息
+        document.setDocumentId(prevDocument.getDocumentId());  // 设置文件document id不变
+        document.setOperateType("edit");  // 设置操作类型
+        document.setOperateTime(new Date());  // 设置操作时间
+
+        documentMapper.insert(document); // 实际是往数据库新增一条记录
     }
 
 }
