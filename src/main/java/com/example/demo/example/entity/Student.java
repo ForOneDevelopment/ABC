@@ -1,11 +1,15 @@
 package com.example.demo.example.entity;
 
+import java.util.Date;
+
 public class Student {
     private Long studentId;
 
     private String name;
 
     private Integer score;
+
+    private Date time;
 
     public Long getStudentId() {
         return studentId;
@@ -29,5 +33,13 @@ public class Student {
 
     public void setScore(Integer score) {
         this.score = score;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 }

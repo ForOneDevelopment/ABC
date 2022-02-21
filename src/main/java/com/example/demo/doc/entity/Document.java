@@ -39,6 +39,7 @@ public class Document {
     //操作类型
     private String operateType;
 
+    //123先空出
     private String categoryValue1;
 
     private String categoryValue2;
