@@ -1,11 +1,13 @@
 package com.example.demo.doc.service.impl;
 
+import com.example.demo.doc.controller.DocumentController;
 import com.example.demo.doc.dao.DocumentMapper;
 import com.example.demo.doc.entity.Document;
 import com.example.demo.doc.entity.DocumentExample;
 import com.example.demo.doc.entity.DocumentRecord;
 import com.example.demo.doc.service.DocumentService;
 import com.example.demo.example.dao.StudentMapper;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import java.util.List;
 @Service
 @Transactional
 public class DocumentServiceImpl implements DocumentService {
+
+    private static final Logger logger = Logger.getLogger(DocumentServiceImpl.class);
 
     private DocumentMapper documentMapper;
     @Resource
@@ -32,7 +36,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void add(DocumentRecord record) {
+    public int add(DocumentRecord record) {
         Document document = new Document();
         //可按Document内元素顺序写，其中操作id自增
         //文件id，获取上一个文件id+1
@@ -60,6 +64,11 @@ public class DocumentServiceImpl implements DocumentService {
         document.setOperateType("upload");
         document.setDocumentText(record.getDocumentText());
         documentMapper.insert(document);
+        //id已经自动注入到document bean中
+        int id = document.getId();
+        logger.info("id is " + id);
+        return id;
+
     }
 
     @Override
@@ -73,18 +82,33 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void update(Document document) {
-        int Id = document.getId();
-        Document prevDocument = documentMapper.selectByPrimaryKey(Id); // 先获取该编辑对象的原始版本
-        // 编辑后的version id需加1
+    public int update(DocumentRecord record) {
+        int recordId = record.getId();
+        Document prevDocument = documentMapper.selectByPrimaryKey(recordId); // 先获取该编辑对象的原始版本
+        Document document = new Document();
+        //文件id不变
+        document.setDocumentId(prevDocument.getDocumentId());
+        //编辑后的version id需加1
         int lastVersionId = prevDocument.getVersionId();
         document.setVersionId(lastVersionId + 1);
-        // 赋值其他非自动生成信息
-        document.setDocumentId(prevDocument.getDocumentId());  // 设置文件document id不变
-        document.setOperateType("edit");  // 设置操作类型
-        document.setOperateTime(new Date());  // 设置操作时间
-
-        documentMapper.insert(document); // 实际是往数据库新增一条记录
+        //其他信息以编辑后的为准
+        document.setHistoryDocumentId(record.getHistoryDocumentId());
+        document.setDocumentName(record.getDocumentName());
+        document.setDocumentSecretLevel(record.getDocumentSecretLevel());
+        document.setDocumentReleaseNumber(record.getDocumentReleaseNumber());
+        document.setDocumentReleaseTime(record.getDocumentReleaseTime());
+        document.setOperatorName(record.getOperatorName());
+        document.setOperateTime(new Date());
+        document.setOperateRemarks(record.getOperateRemarks());
+        //设置操作类型为编辑
+        document.setOperateType("edit");
+        document.setDocumentText(record.getDocumentText());
+        //实际是往数据库新增一条记录
+        documentMapper.insert(document);
+        //id已经自动注入到document bean中
+        int id = document.getId();
+        logger.info("id is " + id);
+        return id;
     }
 
 }
