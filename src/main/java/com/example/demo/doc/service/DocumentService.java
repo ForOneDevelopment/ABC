@@ -8,11 +8,11 @@ import java.util.List;
 public interface DocumentService {
     List<Document> list();
 
-    void add(DocumentRecord record);
+    int add(DocumentRecord record);
 
     void delete(int id);
 
     Document get(int id);
 
-    void update(Document document);
+    int update(DocumentRecord record);
 }

@@ -2,6 +2,8 @@ package com.example.demo.doc.entity;
 
 public class DocumentRecord {
     //只保存前端发来的数据，Document根据需要从DocumentRecord中提取
+    //主键id
+    private int id;
     //关联历史文件id
     private String historyDocumentId;
     //文件名称
@@ -18,6 +20,14 @@ public class DocumentRecord {
     private String operateRemarks;
     //文件正文
     private String documentText;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getHistoryDocumentId() {
         return historyDocumentId;
