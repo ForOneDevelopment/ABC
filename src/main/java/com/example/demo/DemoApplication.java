@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.example.demo.*.dao")
 public class DemoApplication {
 
-	@Bean
+	/*@Bean
 	public Object testBean(PlatformTransactionManager platformTransactionManager){
 		System.out.println(">>>>>>>>>>" + platformTransactionManager.getClass().getName());
 		return new Object();
-	}
+	}*/
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);

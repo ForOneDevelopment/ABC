@@ -27,6 +27,11 @@ public class DocumentController {
     //JSON jackson
     ObjectMapper objectMapper = new ObjectMapper();
 
+    @PostMapping("/document/test")
+    public String test(){
+        return "111";
+    }
+
     @PostMapping("/document/add")
     public String addDocument(@RequestBody String JSONString) {
         logger.info("add Document!");

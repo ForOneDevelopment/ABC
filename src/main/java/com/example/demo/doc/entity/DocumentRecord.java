@@ -20,6 +20,8 @@ public class DocumentRecord {
     private String operateRemarks;
     //文件正文
     private String documentText;
+    //文件图片（暂用此名字）
+    private String pictureLink;
 
     public int getId() {
         return id;
@@ -91,5 +93,13 @@ public class DocumentRecord {
 
     public void setDocumentText(String documentText) {
         this.documentText = documentText == null ? null : documentText.trim();
+    }
+
+    public String getPictureLink() {
+        return pictureLink;
+    }
+
+    public void setPictureLink(String pictureLink) {
+        this.pictureLink = pictureLink == null ? null : pictureLink.trim();
     }
 }

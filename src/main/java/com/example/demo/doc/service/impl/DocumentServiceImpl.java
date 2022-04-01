@@ -63,12 +63,13 @@ public class DocumentServiceImpl implements DocumentService {
         //设置类型为上传操作
         document.setOperateType("upload");
         document.setDocumentText(record.getDocumentText());
+        //将Base64字符串存入数据库中
+        document.setPictureLink(record.getPictureLink());
         documentMapper.insert(document);
         //id已经自动注入到document bean中
         int id = document.getId();
         logger.info("id is " + id);
         return id;
-
     }
 
     @Override
