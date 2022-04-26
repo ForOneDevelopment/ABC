@@ -14,5 +14,5 @@ public interface DocumentService {
 
     Document get(int id);
 
-    int update(DocumentRecord record);
+    int edit(DocumentRecord record);
 }

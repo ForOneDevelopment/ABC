@@ -5,50 +5,34 @@ import java.util.Date;
 public class Document {
     //操作id
     private Integer id;
-
     //文件id
     private Integer documentId;
-
     //版本id
     private Integer versionId;
-
     //关联历史文件id
     private String historyDocumentId;
-
-    //文件名称
+    //文件名称(必填)
     private String documentName;
-
-    //文件密等
+    //文件密等(必填)
     private String documentSecretLevel;
-
-    //文件编号
+    //文件编号(必填)
     private String documentReleaseNumber;
-
-    //发布时间
+    //发布时间(必填)
     private String documentReleaseTime;
-
-    //用户姓名
+    //用户姓名(必填)
     private String operatorName;
-
     //操作时间
     private Date operateTime;
-
     //操作说明
     private String operateRemarks;
-
     //操作类型
     private String operateType;
-
     //123先空出
     private String categoryValue1;
-
     private String categoryValue2;
-
     private String categoryValue3;
-
-    //文件正文
+    //文件正文(必填)
     private String documentText;
-
     //图片链接
     private String pictureLink;
 

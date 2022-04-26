@@ -34,7 +34,7 @@ public class DocumentController {
 
     @PostMapping("/document/add")
     public String addDocument(@RequestBody String JSONString) {
-        logger.info("add Document!");
+        logger.info("正在上传文件...");
         RestResponse restResponse = new RestResponse();
         String result;
         DocumentRecord record;
@@ -75,12 +75,13 @@ public class DocumentController {
             logger.error("e3 addDocument 后台回应转JSON数据失败!");
             return "后台回应转JSON数据失败!";
         }
+        logger.info("上传文件成功！");
         return result;
     }
 
-    @PostMapping("/document/update")
+    @PostMapping("/document/edit")
     public String updateDocument(@RequestBody String JSONString) {
-        logger.info("update Document!");
+        logger.info("正在更新文件...");
         RestResponse restResponse = new RestResponse();
         String result;
         DocumentRecord record;
@@ -105,7 +106,7 @@ public class DocumentController {
         }
         //成功获取到Record,注意service层是否有异常！
         //执行业务代码
-        int id = documentService.update(record);
+        int id = documentService.edit(record);
         if(id == -1){
             //Internal Server Error/内部服务器错误
             restResponse.setCode(500);
@@ -123,6 +124,7 @@ public class DocumentController {
             //e3.printStackTrace();
             return "后台回应转JSON数据失败!";
         }
+        logger.info("更新文件成功！");
         return result;
     }
 }

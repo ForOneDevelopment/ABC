@@ -55,7 +55,10 @@ public class DocumentServiceImpl implements DocumentService {
         document.setDocumentId(lastDocumentId + 1); //上传文件document id每次加1
         //首次上传设置版本号为1
         document.setVersionId(1);
-        document.setHistoryDocumentId(record.getHistoryDocumentId());
+        if(record.getHistoryDocumentId() != null) {
+            document.setHistoryDocumentId(record.getHistoryDocumentId());
+        }
+        //必填项不做判断
         document.setDocumentName(record.getDocumentName());
         document.setDocumentSecretLevel(record.getDocumentSecretLevel());
         document.setDocumentReleaseNumber(record.getDocumentReleaseNumber());
@@ -64,31 +67,35 @@ public class DocumentServiceImpl implements DocumentService {
         //document.setOperator_name("admin"); //先默认设置为管理员
         //设置文件操作时间
         document.setOperateTime(new Date());
-        document.setOperateRemarks(record.getOperateRemarks());
+        if(record.getOperateRemarks() != null) {
+            document.setOperateRemarks(record.getOperateRemarks());
+        }
         //设置类型为上传操作
         document.setOperateType("upload");
         document.setDocumentText(record.getDocumentText());
         //将图片存储在指定路径，并将路径保存在数据库中
         //暂时以上传文件名为文件夹名，以递增数字为图片名
-        String foldName = record.getDocumentName();
-        int pictureName = 1;
-        try {
-            for (String pictureData : record.getPictureData()) {
-                String unzip = Base64RAR.unZip(pictureData);
-                File picture = ImageBase64Converter.convertBase64ToFile
-                        (unzip, Construct.picturePath + "/" + foldName, Integer.toString(pictureName));
-                pictureName++;
+        if(record.getPictureData() != null) {
+            String foldName = record.getDocumentName();
+            int pictureName = 1;
+            try {
+                for (String pictureData : record.getPictureData()) {
+                    String unzip = Base64RAR.unZip(pictureData);
+                    File picture = ImageBase64Converter.convertBase64ToFile
+                            (unzip, Construct.picturePath + "/" + foldName, Integer.toString(pictureName));
+                    pictureName++;
+                }
+            } catch (IOException e1) {
+                logger.error("e1 add Base64字符串解压出错!");
+                return -1;
             }
-        }catch (IOException e1){
-            logger.error("e1 add Base64字符串解压出错!");
-            return -1;
+            //将图片地址存入数据库中
+            document.setPictureLink(Construct.picturePath + "/" + foldName);
         }
-        //将图片地址存入数据库中
-        document.setPictureLink(Construct.picturePath + "/" + foldName);
         documentMapper.insert(document);
         //id已经自动注入到document bean中
         int id = document.getId();
-        logger.info("add id is " + id);
+        //logger.info("add id is " + id);
         return id;
     }
 
@@ -104,7 +111,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     //更新，不是迭代历史版本
-    public int update(DocumentRecord record) {
+    public int edit(DocumentRecord record) {
         int recordId = record.getId();
         Document prevDocument = documentMapper.selectByPrimaryKey(recordId); // 先获取该编辑对象的原始版本
         Document document = new Document();
@@ -114,14 +121,18 @@ public class DocumentServiceImpl implements DocumentService {
         int lastVersionId = prevDocument.getVersionId();
         document.setVersionId(lastVersionId + 1);
         //其他信息以编辑后的为准
+        //应规定几项不可修改，如历史文件id不变
         document.setHistoryDocumentId(record.getHistoryDocumentId());
+        //必填项不做判断
         document.setDocumentName(record.getDocumentName());
         document.setDocumentSecretLevel(record.getDocumentSecretLevel());
         document.setDocumentReleaseNumber(record.getDocumentReleaseNumber());
         document.setDocumentReleaseTime(record.getDocumentReleaseTime());
         document.setOperatorName(record.getOperatorName());
         document.setOperateTime(new Date());
-        document.setOperateRemarks(record.getOperateRemarks());
+        if(record.getOperateRemarks() != null) {
+            document.setOperateRemarks(record.getOperateRemarks());
+        }
         //设置操作类型为编辑
         document.setOperateType("edit");
         document.setDocumentText(record.getDocumentText());
@@ -137,17 +148,19 @@ public class DocumentServiceImpl implements DocumentService {
                     picture.delete();
                 }
             }
-            int pictureName = 1;
-            try {
-                for (String pictureData : record.getPictureData()) {
-                    String unzip = Base64RAR.unZip(pictureData);
-                    File picture = ImageBase64Converter.convertBase64ToFile
-                            (unzip, pictureLink, Integer.toString(pictureName));
-                    pictureName++;
+            if (record.getPictureData() != null) {
+                int pictureName = 1;
+                try {
+                    for (String pictureData : record.getPictureData()) {
+                        String unzip = Base64RAR.unZip(pictureData);
+                        File picture = ImageBase64Converter.convertBase64ToFile
+                                (unzip, pictureLink, Integer.toString(pictureName));
+                        pictureName++;
+                    }
+                } catch (IOException e1) {
+                    logger.error("e1 update Base64字符串解压出错!");
+                    return -1;
                 }
-            } catch (IOException e1) {
-                logger.error("e1 update Base64字符串解压出错!");
-                return -1;
             }
         }
         //沿用之前的文件夹地址
@@ -156,7 +169,7 @@ public class DocumentServiceImpl implements DocumentService {
         documentMapper.insert(document);
         //id已经自动注入到document bean中
         int id = document.getId();
-        logger.info("update id is " + id);
+        //logger.info("edit id is " + id);
         return id;
     }
 
