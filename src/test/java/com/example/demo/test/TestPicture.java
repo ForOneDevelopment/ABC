@@ -21,7 +21,7 @@ public class TestPicture {
         String beforeZip = ImageBase64Converter.convertFileToBase64(pic.getAbsolutePath());
         String zip = Base64RAR.zipBase64(beforeZip);
         logger.info(zip.length());
-        String unzip = Base64RAR.upZip(zip);
+        String unzip = Base64RAR.unZip(zip);
         File another = ImageBase64Converter.convertBase64ToFile(unzip,"/Users/hui/Desktop/picture", "a.jpeg");
     }
 

@@ -1,5 +1,7 @@
 package com.example.demo.doc.entity;
 
+import java.util.List;
+
 public class DocumentRecord {
     //只保存前端发来的数据，Document根据需要从DocumentRecord中提取
     //主键id
@@ -20,8 +22,8 @@ public class DocumentRecord {
     private String operateRemarks;
     //文件正文
     private String documentText;
-    //文件图片（暂用此名字）
-    private String pictureLink;
+    //文件图片(列表形式)
+    private List<String> pictureData;
 
     public int getId() {
         return id;
@@ -95,11 +97,11 @@ public class DocumentRecord {
         this.documentText = documentText == null ? null : documentText.trim();
     }
 
-    public String getPictureLink() {
-        return pictureLink;
+    public List<String> getPictureData() {
+        return pictureData;
     }
 
-    public void setPictureLink(String pictureLink) {
-        this.pictureLink = pictureLink == null ? null : pictureLink.trim();
+    public void setPictureData(List<String> pictureData) {
+        this.pictureData = pictureData;
     }
 }

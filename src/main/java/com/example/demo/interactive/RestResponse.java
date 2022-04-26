@@ -2,7 +2,7 @@ package com.example.demo.interactive;
 
 //前后端交互接口，通用对象模型
 public class RestResponse {
-    //编码
+    //HTTP状态码
     private int code;
     //具体信息
     private String message;

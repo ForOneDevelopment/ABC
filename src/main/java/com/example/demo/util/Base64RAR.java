@@ -40,7 +40,7 @@ public class Base64RAR {
      *
      * @throws IOException
      */
-    public static String upZip(String zipBase64) throws IOException {
+    public static String unZip(String zipBase64) throws IOException {
         if (null == zipBase64 || zipBase64.length() <= 0) {
             return zipBase64;
         }

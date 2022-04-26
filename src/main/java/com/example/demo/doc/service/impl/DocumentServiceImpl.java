@@ -7,12 +7,17 @@ import com.example.demo.doc.entity.DocumentExample;
 import com.example.demo.doc.entity.DocumentRecord;
 import com.example.demo.doc.service.DocumentService;
 import com.example.demo.example.dao.StudentMapper;
+import com.example.demo.interactive.Construct;
+import com.example.demo.util.Base64RAR;
+import com.example.demo.util.ImageBase64Converter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -63,8 +68,23 @@ public class DocumentServiceImpl implements DocumentService {
         //设置类型为上传操作
         document.setOperateType("upload");
         document.setDocumentText(record.getDocumentText());
-        //将Base64字符串存入数据库中
-        document.setPictureLink(record.getPictureLink());
+        //将图片存储在指定路径，并将路径保存在数据库中
+        //暂时以当前时间为文件夹名，以递增数字为文件名
+        String foldName = Long.toString(System.currentTimeMillis());
+        int pictureName = 1;
+        try {
+            for (String pictureData : record.getPictureData()) {
+                String unzip = Base64RAR.unZip(pictureData);
+                File picture = ImageBase64Converter.convertBase64ToFile
+                        (unzip, Construct.picturePath + "/" + foldName, Integer.toString(pictureName));
+                pictureName++;
+            }
+        }catch (IOException e1){
+            logger.error("e1 add Base64字符串解压出错!");
+            return -1;
+        }
+        //将图片地址存入数据库中
+        document.setPictureLink(Construct.picturePath + "/" + foldName);
         documentMapper.insert(document);
         //id已经自动注入到document bean中
         int id = document.getId();

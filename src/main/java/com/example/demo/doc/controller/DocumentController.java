@@ -43,30 +43,36 @@ public class DocumentController {
             record = objectMapper.readValue(JSONString, DocumentRecord.class);
         }catch (Exception e1){
             //打出错误日志
-            logger.error("e1 addDocument JSON数据格式有误，解析JSON数据失败: ");
-            //e1.printStackTrace();
+            logger.error("e1 addDocument JSON数据格式有误，解析JSON数据失败!");
             //通过接口返回，服务器无法根据客户端请求的内容特性完成请求(Not Acceptable)
             restResponse.setCode(406);
             restResponse.setMessage("JSON数据格式有误，解析JSON数据失败!");
             try {
                 result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
             }catch (Exception e2){
-                logger.error("e2 addDocument 后台回应转JSON数据失败: ");
-                //e2.printStackTrace();
+                logger.error("e2 addDocument 后台回应转JSON数据失败!");
                 return "后台回应转JSON数据失败!";
             }
             return result;
         }
         //成功获取到Record,注意service层是否有异常！
         //执行业务代码
-        documentService.add(record);
-        restResponse.setCode(200);
-        restResponse.setMessage("上传数据成功！");
+        int id = documentService.add(record);
+        //插入数据失败
+        if(id == -1){
+            //Internal Server Error/内部服务器错误
+            restResponse.setCode(500);
+            restResponse.setMessage("服务器内部错误，请重试！");
+        }else{
+            //插入数据成功，并返回id
+            restResponse.setCode(200);
+            restResponse.setMessage("上传数据成功！");
+            restResponse.setData(id);
+        }
         try {
             result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
         }catch (Exception e3){
-            logger.error("e3 addDocument 后台回应转JSON数据失败: ");
-            //e3.printStackTrace();
+            logger.error("e3 addDocument 后台回应转JSON数据失败!");
             return "后台回应转JSON数据失败!";
         }
         return result;
@@ -83,7 +89,7 @@ public class DocumentController {
             record = objectMapper.readValue(JSONString, DocumentRecord.class);
         }catch (Exception e1){
             //打出错误日志
-            logger.error("e1 updateDocument JSON数据格式有误，解析JSON数据失败: ");
+            logger.error("e1 updateDocument JSON数据格式有误，解析JSON数据失败!");
             //e1.printStackTrace();
             //通过接口返回，服务器无法根据客户端请求的内容特性完成请求(Not Acceptable)
             restResponse.setCode(406);
@@ -91,7 +97,7 @@ public class DocumentController {
             try {
                 result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
             }catch (Exception e2){
-                logger.error("e2 updateDocument 后台回应转JSON数据失败: ");
+                logger.error("e2 updateDocument 后台回应转JSON数据失败!");
                 //e2.printStackTrace();
                 return "后台回应转JSON数据失败!";
             }
@@ -105,7 +111,7 @@ public class DocumentController {
         try {
             result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
         }catch (Exception e3){
-            logger.error("e3 updateDocument 后台回应转JSON数据失败: ");
+            logger.error("e3 updateDocument 后台回应转JSON数据失败!");
             //e3.printStackTrace();
             return "后台回应转JSON数据失败!";
         }
