@@ -69,8 +69,8 @@ public class DocumentServiceImpl implements DocumentService {
         document.setOperateType("upload");
         document.setDocumentText(record.getDocumentText());
         //将图片存储在指定路径，并将路径保存在数据库中
-        //暂时以当前时间为文件夹名，以递增数字为文件名
-        String foldName = Long.toString(System.currentTimeMillis());
+        //暂时以上传文件名为文件夹名，以递增数字为图片名
+        String foldName = record.getDocumentName();
         int pictureName = 1;
         try {
             for (String pictureData : record.getPictureData()) {
@@ -88,7 +88,7 @@ public class DocumentServiceImpl implements DocumentService {
         documentMapper.insert(document);
         //id已经自动注入到document bean中
         int id = document.getId();
-        logger.info("id is " + id);
+        logger.info("add id is " + id);
         return id;
     }
 
@@ -103,6 +103,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    //更新，不是迭代历史版本
     public int update(DocumentRecord record) {
         int recordId = record.getId();
         Document prevDocument = documentMapper.selectByPrimaryKey(recordId); // 先获取该编辑对象的原始版本
@@ -124,11 +125,38 @@ public class DocumentServiceImpl implements DocumentService {
         //设置操作类型为编辑
         document.setOperateType("edit");
         document.setDocumentText(record.getDocumentText());
+        //处理图片
+        String pictureLink = prevDocument.getPictureLink();
+        //如果图片变更过，将原路径图片都删除并换新图片
+        if(record.getPictureFlag()) {
+            File pictureFold = new File(pictureLink);
+            File[] pictures = pictureFold.listFiles();
+            //文件夹不为空则删除全部图片
+            if (pictures.length != 0) {
+                for (File picture : pictures) {
+                    picture.delete();
+                }
+            }
+            int pictureName = 1;
+            try {
+                for (String pictureData : record.getPictureData()) {
+                    String unzip = Base64RAR.unZip(pictureData);
+                    File picture = ImageBase64Converter.convertBase64ToFile
+                            (unzip, pictureLink, Integer.toString(pictureName));
+                    pictureName++;
+                }
+            } catch (IOException e1) {
+                logger.error("e1 update Base64字符串解压出错!");
+                return -1;
+            }
+        }
+        //沿用之前的文件夹地址
+        document.setPictureLink(pictureLink);
         //实际是往数据库新增一条记录
         documentMapper.insert(document);
         //id已经自动注入到document bean中
         int id = document.getId();
-        logger.info("id is " + id);
+        logger.info("update id is " + id);
         return id;
     }
 

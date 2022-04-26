@@ -105,9 +105,17 @@ public class DocumentController {
         }
         //成功获取到Record,注意service层是否有异常！
         //执行业务代码
-        documentService.update(record);
-        restResponse.setCode(200);
-        restResponse.setMessage("上传编辑后的数据成功！");
+        int id = documentService.update(record);
+        if(id == -1){
+            //Internal Server Error/内部服务器错误
+            restResponse.setCode(500);
+            restResponse.setMessage("服务器内部错误，请重试！");
+        }else{
+            //插入数据成功，并返回id
+            restResponse.setCode(200);
+            restResponse.setMessage("上传编辑后的数据成功！");
+            restResponse.setData(id);
+        }
         try {
             result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
         }catch (Exception e3){

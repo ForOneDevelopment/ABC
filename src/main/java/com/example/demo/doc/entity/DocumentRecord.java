@@ -24,6 +24,8 @@ public class DocumentRecord {
     private String documentText;
     //文件图片(列表形式)
     private List<String> pictureData;
+    //标志图片是否有改动
+    private boolean pictureFlag;
 
     public int getId() {
         return id;
@@ -103,5 +105,13 @@ public class DocumentRecord {
 
     public void setPictureData(List<String> pictureData) {
         this.pictureData = pictureData;
+    }
+
+    public boolean getPictureFlag() {
+        return pictureFlag;
+    }
+
+    public void setPictureFlag(boolean pictureFlag) {
+        this.pictureFlag = pictureFlag;
     }
 }
