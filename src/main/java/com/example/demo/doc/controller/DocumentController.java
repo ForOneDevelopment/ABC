@@ -68,10 +68,6 @@ public class DocumentController {
             restResponse.setCode(412);
             restResponse.setMessage("之前已上传过同名文件！");
             logger.info("上传文件失败!");
-        }else if (id == -2) {
-            //Internal Server Error/内部服务器错误
-            restResponse.setCode(500);
-            logger.info("上传文件失败!");
         } else {
             //插入数据成功，并返回id
             restResponse.setCode(200);
@@ -118,16 +114,10 @@ public class DocumentController {
         //成功获取到Record,注意service层是否有异常！
         //执行业务代码
         int id = documentService.edit(record);
-        if(id == -1){
-            //Internal Server Error/内部服务器错误
-            restResponse.setCode(500);
-            restResponse.setMessage("服务器内部错误，请重试！");
-        }else{
-            //插入数据成功，并返回id
-            restResponse.setCode(200);
-            restResponse.setMessage("上传编辑后的数据成功！");
-            restResponse.setData(id);
-        }
+        //插入数据成功，并返回id
+        restResponse.setCode(200);
+        restResponse.setMessage("上传编辑后的数据成功!");
+        restResponse.setData(id);
         try {
             result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
         }catch (Exception e3){
@@ -135,7 +125,7 @@ public class DocumentController {
             //e3.printStackTrace();
             return "后台回应转JSON数据失败!";
         }
-        logger.info("更新文件成功！");
+        logger.info("更新文件成功!");
         return result;
     }
 }

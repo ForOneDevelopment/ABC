@@ -70,4 +70,29 @@ public class TestJackson {
         int id = documentService.add(record);
         logger.info("id is " + id);
     }
+
+    @Test
+    public void test2() throws JacksonException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DocumentRecord record = new DocumentRecord();
+        record.setHistoryDocumentId("100");
+        record.setDocumentName("改动");
+        record.setDocumentSecretLevel("随意");
+        record.setDocumentReleaseNumber("没有");
+        record.setDocumentReleaseTime("2022-12-12");
+        record.setOperatorName("文");
+        record.setOperateRemarks("00000");
+        record.setDocumentText("全部改动");
+        File pic1 = new File("/Users/hui/Desktop/picture/28509b4e7b9afcea822545b6ec237409.jpeg");
+        String beforeZip1 = ImageBase64Converter.convertFileToBase64(pic1.getAbsolutePath());
+        File pic2 = new File("/Users/hui/Desktop/picture/4eb71dd2e62c818aba6dbea0e5989b10.jpeg");
+        String beforeZip2 = ImageBase64Converter.convertFileToBase64(pic2.getAbsolutePath());
+        List<String> pictures = new ArrayList<>();
+        pictures.add(beforeZip1);
+        //pictures.add(beforeZip2);
+        record.setPictureData(pictures);
+        record.setPictureFlag(true);
+        String JsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(record);
+        logger.info(JsonString);
+    }
 }

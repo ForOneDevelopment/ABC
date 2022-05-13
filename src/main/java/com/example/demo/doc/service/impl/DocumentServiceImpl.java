@@ -48,9 +48,7 @@ public class DocumentServiceImpl implements DocumentService {
         List<String> fileNames = new ArrayList<>();
         for(File pictureFolder : pictureFolders){
             fileNames.add(pictureFolder.getName());
-            logger.info(fileNames);
         }
-        logger.info(record.getDocumentName());
         if(fileNames.contains(record.getDocumentName())){
             return -1;
         }
@@ -125,7 +123,8 @@ public class DocumentServiceImpl implements DocumentService {
     //更新，不是迭代历史版本
     public int edit(DocumentRecord record) {
         int recordId = record.getId();
-        Document prevDocument = documentMapper.selectByPrimaryKey(recordId); // 先获取该编辑对象的原始版本
+        //先获取该编辑对象的原始版本
+        Document prevDocument = documentMapper.selectByPrimaryKey(recordId);
         Document document = new Document();
         //文件id不变
         document.setDocumentId(prevDocument.getDocumentId());
@@ -133,26 +132,31 @@ public class DocumentServiceImpl implements DocumentService {
         int lastVersionId = prevDocument.getVersionId();
         document.setVersionId(lastVersionId + 1);
         //其他信息以编辑后的为准
-        //应规定几项不可修改，如历史文件id不变
-        document.setHistoryDocumentId(record.getHistoryDocumentId());
         //必填项不做判断
+        document.setHistoryDocumentId(record.getHistoryDocumentId());
         document.setDocumentName(record.getDocumentName());
         document.setDocumentSecretLevel(record.getDocumentSecretLevel());
         document.setDocumentReleaseNumber(record.getDocumentReleaseNumber());
         document.setDocumentReleaseTime(record.getDocumentReleaseTime());
         document.setOperatorName(record.getOperatorName());
         document.setOperateTime(new Date());
+        //非必填项
         if(record.getOperateRemarks() != null) {
             document.setOperateRemarks(record.getOperateRemarks());
         }
         //设置操作类型为编辑
         document.setOperateType("edit");
+        //文件正文
         document.setDocumentText(record.getDocumentText());
         //处理图片
         String pictureLink = prevDocument.getPictureLink();
+        File pictureFold = new File(pictureLink);
+        if(!pictureFold.exists()){
+            logger.warn("原文件夹不存在,将生成新的目录!");
+            pictureFold.mkdirs();
+        }
         //如果图片变更过，将原路径图片都删除并换新图片
         if(record.getPictureFlag()) {
-            File pictureFold = new File(pictureLink);
             File[] pictures = pictureFold.listFiles();
             //文件夹不为空则删除全部图片
             if (pictures.length != 0) {
@@ -162,16 +166,12 @@ public class DocumentServiceImpl implements DocumentService {
             }
             if (record.getPictureData() != null) {
                 int pictureName = 1;
-                try {
-                    for (String pictureData : record.getPictureData()) {
-                        String unzip = Base64RAR.unZip(pictureData);
-                        File picture = ImageBase64Converter.convertBase64ToFile
-                                (unzip, pictureLink, Integer.toString(pictureName));
-                        pictureName++;
-                    }
-                } catch (IOException e1) {
-                    logger.error("e1 update Base64字符串解压出错!");
-                    return -2;
+
+                for (String pictureData : record.getPictureData()) {
+                    //String unzip = Base64RAR.unZip(pictureData);
+                    File picture = ImageBase64Converter.convertBase64ToFile
+                            (pictureData, pictureLink, Integer.toString(pictureName) + ".jpeg");
+                    pictureName++;
                 }
             }
         }
@@ -184,5 +184,4 @@ public class DocumentServiceImpl implements DocumentService {
         //logger.info("edit id is " + id);
         return id;
     }
-
 }
