@@ -128,4 +128,46 @@ public class DocumentController {
         logger.info("更新文件成功!");
         return result;
     }
+
+    @PostMapping("document/delete")
+    public String deleteDocument(@RequestBody String JSONString){
+        logger.info("正在删除文件...");
+        RestResponse restResponse = new RestResponse();
+        String result;
+        DocumentRecord record;
+        //将前端发来的JSON反序列化，转为DocumentRecord
+        try {
+            record = objectMapper.readValue(JSONString, DocumentRecord.class);
+        }catch (Exception e1){
+            //打出错误日志
+            logger.error("e1 deleteDocument JSON数据格式有误，解析JSON数据失败!");
+            //e1.printStackTrace();
+            //通过接口返回，服务器无法根据客户端请求的内容特性完成请求(Not Acceptable)
+            restResponse.setCode(406);
+            restResponse.setMessage("JSON数据格式有误，解析JSON数据失败!");
+            try {
+                result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
+            }catch (Exception e2){
+                logger.error("e2 deleteDocument 后台回应转JSON数据失败!");
+                //e2.printStackTrace();
+                return "后台回应转JSON数据失败!";
+            }
+            return result;
+        }
+        //执行删除操作
+        int id = documentService.delete(record);
+        //删除数据成功，并返回id
+        restResponse.setCode(200);
+        restResponse.setMessage("删除数据成功!");
+        restResponse.setData(id);
+        try {
+            result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
+        }catch (Exception e3){
+            logger.error("e3 deleteDocument 后台回应转JSON数据失败!");
+            //e3.printStackTrace();
+            return "后台回应转JSON数据失败!";
+        }
+        logger.info("删除文件成功!");
+        return result;
+    }
 }

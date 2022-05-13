@@ -273,4 +273,8 @@
   <select id="getBiggestDocument" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" /> from document order by document_id desc limit 1;
   </select>
+  <!--查询所有数据-->
+  <select id="selectAllDocuments" resultType="com.example.demo.doc.entity.Document">
+    select * from document
+  </select>
 </mapper>

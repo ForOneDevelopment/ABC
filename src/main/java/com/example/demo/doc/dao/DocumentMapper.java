@@ -25,4 +25,6 @@ public interface DocumentMapper {
 
     //获取上一个最大的文件版本号
     Document getBiggestDocument();
+
+    List<Document> selectAllDocuments();
 }

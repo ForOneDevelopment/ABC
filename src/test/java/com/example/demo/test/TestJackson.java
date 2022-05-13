@@ -95,4 +95,18 @@ public class TestJackson {
         String JsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(record);
         logger.info(JsonString);
     }
+
+    @Test
+    public void test3() throws JacksonException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DocumentRecord record = new DocumentRecord();
+        record.setId(30);
+        record.setDocumentName("ABC");
+        record.setDocumentSecretLevel("随意");
+        record.setOperatorName("okk");
+        record.setOperateRemarks("删除");
+        record.setDocumentText("1111");
+        String JsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(record);
+        logger.info(JsonString);
+    }
 }

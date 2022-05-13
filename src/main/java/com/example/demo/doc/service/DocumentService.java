@@ -10,7 +10,7 @@ public interface DocumentService {
 
     int add(DocumentRecord record);
 
-    void delete(int id);
+    int delete(DocumentRecord record);
 
     Document get(int id);
 

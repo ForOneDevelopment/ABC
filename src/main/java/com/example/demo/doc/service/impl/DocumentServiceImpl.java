@@ -110,8 +110,41 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void delete(int id) {
-        documentMapper.deleteByPrimaryKey(id);
+    //历史文件
+    public int delete(DocumentRecord record) {
+        int documentId = documentMapper.selectByPrimaryKey(record.getId()).getDocumentId();
+        String documentName = documentMapper.selectByPrimaryKey(record.getId()).getDocumentName();
+        //构造删除信息插入数据库
+        Document document = new Document();
+        document.setDocumentName(record.getDocumentName());
+        document.setOperatorName(record.getOperatorName());
+        document.setOperateTime(new Date());
+        if(record.getOperateRemarks() != null) {
+            document.setOperateRemarks(record.getOperateRemarks());
+        }
+        document.setOperateType("delete");
+        //以下为非必要项
+        document.setDocumentSecretLevel(record.getDocumentSecretLevel());
+        document.setDocumentText(record.getDocumentText());
+        document.setDocumentId(1);
+        document.setVersionId(1);
+        document.setDocumentSecretLevel(record.getDocumentSecretLevel());//
+        documentMapper.insert(document);
+        //id已经自动注入到document bean中
+        int id = document.getId();
+        //执行删除操作
+        List<Document> documents = documentMapper.selectAllDocuments();
+        for(Document singleDocument : documents){
+            if(singleDocument.getDocumentId() == documentId){
+                documentMapper.deleteByPrimaryKey(singleDocument.getId());
+            }
+        }
+        //删除相关图片
+        File pictureFolder = new File(Constant.picturePath + "/" + documentName);
+        if(pictureFolder.exists()){
+            pictureFolder.delete();
+        }
+        return id;
     }
 
     @Override
@@ -166,7 +199,6 @@ public class DocumentServiceImpl implements DocumentService {
             }
             if (record.getPictureData() != null) {
                 int pictureName = 1;
-
                 for (String pictureData : record.getPictureData()) {
                     //String unzip = Base64RAR.unZip(pictureData);
                     File picture = ImageBase64Converter.convertBase64ToFile

@@ -24,7 +24,6 @@ public class TestDocument {
     @Test
     public void contextLoads() throws SQLException {
         logger.info("start...");
-        documentService.delete(1);
         logger.info("update success!");
     }
 }
