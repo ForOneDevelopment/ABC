@@ -1,5 +1,6 @@
 package com.example.demo.test;
 
+import com.example.demo.interactive.Constant;
 import com.example.demo.util.Base64RAR;
 import com.example.demo.util.ImageBase64Converter;
 import org.apache.log4j.Logger;
@@ -12,7 +13,12 @@ public class TestPicture {
     private static final Logger logger = Logger.getLogger(TestPicture.class);
 
     public static void main(String[] args) throws IOException {
-        test2();
+        test3();
+    }
+
+    public static void test3() throws IOException {
+        File fold = new File(Constant.picturePath + "/ABC");
+        fold.mkdir();
     }
 
     //测试用字符串还原图片
@@ -20,9 +26,9 @@ public class TestPicture {
         File pic = new File("/Users/hui/Desktop/picture/28509b4e7b9afcea822545b6ec237409.jpeg");
         String beforeZip = ImageBase64Converter.convertFileToBase64(pic.getAbsolutePath());
         String zip = Base64RAR.zipBase64(beforeZip);
-        logger.info(zip.length());
-        String unzip = Base64RAR.unZip(zip);
-        File another = ImageBase64Converter.convertBase64ToFile(unzip,"/Users/hui/Desktop/picture", "a.jpeg");
+        logger.info("aaa" + beforeZip + "bbb");
+        //String unzip = Base64RAR.unZip(zip);
+        //File another = ImageBase64Converter.convertBase64ToFile(unzip,"/Users/hui/Desktop/picture", "b.jpeg");
     }
 
     //测试将制定文件夹的图片转为压缩Base64字符串
@@ -57,3 +63,4 @@ public class TestPicture {
         }
     }
 }
+

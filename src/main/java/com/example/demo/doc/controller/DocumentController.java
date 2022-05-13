@@ -2,6 +2,7 @@ package com.example.demo.doc.controller;
 
 import com.example.demo.doc.entity.DocumentRecord;
 import com.example.demo.doc.service.DocumentService;
+import com.example.demo.interactive.Constant;
 import com.example.demo.interactive.RestResponse;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -56,26 +60,33 @@ public class DocumentController {
             return result;
         }
         //成功获取到Record,注意service层是否有异常！
-        //执行业务代码
         int id = documentService.add(record);
         //插入数据失败
-        if(id == -1){
+        if (id == -1) {
+            //之前曾上传过同名文件
+            //前提条件失败
+            restResponse.setCode(412);
+            restResponse.setMessage("之前已上传过同名文件！");
+            logger.info("上传文件失败!");
+        }else if (id == -2) {
             //Internal Server Error/内部服务器错误
             restResponse.setCode(500);
-            restResponse.setMessage("服务器内部错误，请重试！");
-        }else{
+            logger.info("上传文件失败!");
+        } else {
             //插入数据成功，并返回id
             restResponse.setCode(200);
-            restResponse.setMessage("上传数据成功！");
+            restResponse.setMessage("上传数据成功!");
             restResponse.setData(id);
         }
         try {
             result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
-        }catch (Exception e3){
+        } catch (Exception e3) {
             logger.error("e3 addDocument 后台回应转JSON数据失败!");
             return "后台回应转JSON数据失败!";
         }
-        logger.info("上传文件成功！");
+        if(restResponse.getCode() == 200) {
+            logger.info("上传文件成功！");
+        }
         return result;
     }
 

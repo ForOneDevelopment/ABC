@@ -270,7 +270,7 @@
       picture_link = #{pictureLink,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <select id="getLastDocument" resultMap="BaseResultMap">
+  <select id="getBiggestDocument" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" /> from document order by document_id desc limit 1;
   </select>
 </mapper>

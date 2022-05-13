@@ -1,6 +1,6 @@
 package com.example.demo.interactive;
 
-public interface Construct {
+public interface Constant {
 
     String picturePath = "/Users/hui/Desktop/picture";
 

@@ -1,23 +1,21 @@
 package com.example.demo.doc.service.impl;
 
-import com.example.demo.doc.controller.DocumentController;
 import com.example.demo.doc.dao.DocumentMapper;
 import com.example.demo.doc.entity.Document;
 import com.example.demo.doc.entity.DocumentExample;
 import com.example.demo.doc.entity.DocumentRecord;
 import com.example.demo.doc.service.DocumentService;
-import com.example.demo.example.dao.StudentMapper;
-import com.example.demo.interactive.Construct;
+import com.example.demo.interactive.Constant;
 import com.example.demo.util.Base64RAR;
 import com.example.demo.util.ImageBase64Converter;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,11 +40,25 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public int add(DocumentRecord record) {
+        //先判断文件名之前是否上传过
+        File picturePath = new File(Constant.picturePath);
+        if(!picturePath.exists()) picturePath.mkdirs();
+        File[] pictureFolders = picturePath.listFiles();
+        //保存已上传的文件列表
+        List<String> fileNames = new ArrayList<>();
+        for(File pictureFolder : pictureFolders){
+            fileNames.add(pictureFolder.getName());
+            logger.info(fileNames);
+        }
+        logger.info(record.getDocumentName());
+        if(fileNames.contains(record.getDocumentName())){
+            return -1;
+        }
         Document document = new Document();
         //可按Document内元素顺序写，其中操作id自增
-        //文件id，获取上一个文件id+1
+        //文件id，获取数据库中最大文件id，再+1
         int lastDocumentId;
-        Document lastDocument = documentMapper.getLastDocument();
+        Document lastDocument = documentMapper.getBiggestDocument();
         if (lastDocument == null){
             lastDocumentId = 0;
         }else{
@@ -67,6 +79,7 @@ public class DocumentServiceImpl implements DocumentService {
         //document.setOperator_name("admin"); //先默认设置为管理员
         //设置文件操作时间
         document.setOperateTime(new Date());
+        //操作说明
         if(record.getOperateRemarks() != null) {
             document.setOperateRemarks(record.getOperateRemarks());
         }
@@ -77,20 +90,19 @@ public class DocumentServiceImpl implements DocumentService {
         //暂时以上传文件名为文件夹名，以递增数字为图片名
         if(record.getPictureData() != null) {
             String foldName = record.getDocumentName();
+            File folder = new File(Constant.picturePath + "/" + foldName);
+            folder.mkdir();
             int pictureName = 1;
-            try {
-                for (String pictureData : record.getPictureData()) {
-                    String unzip = Base64RAR.unZip(pictureData);
-                    File picture = ImageBase64Converter.convertBase64ToFile
-                            (unzip, Construct.picturePath + "/" + foldName, Integer.toString(pictureName));
-                    pictureName++;
-                }
-            } catch (IOException e1) {
-                logger.error("e1 add Base64字符串解压出错!");
-                return -1;
+            for (String pictureData : record.getPictureData()) {
+                //先不压缩
+                //String unzip = Base64RAR.unZip(pictureData);
+                File picture = ImageBase64Converter.convertBase64ToFile
+                        (pictureData, Constant.picturePath + "/" + foldName,
+                                Integer.toString(pictureName) + ".jpeg");
+                pictureName++;
             }
             //将图片地址存入数据库中
-            document.setPictureLink(Construct.picturePath + "/" + foldName);
+            document.setPictureLink(Constant.picturePath + "/" + foldName);
         }
         documentMapper.insert(document);
         //id已经自动注入到document bean中
@@ -159,7 +171,7 @@ public class DocumentServiceImpl implements DocumentService {
                     }
                 } catch (IOException e1) {
                     logger.error("e1 update Base64字符串解压出错!");
-                    return -1;
+                    return -2;
                 }
             }
         }

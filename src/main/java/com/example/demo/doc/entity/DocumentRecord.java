@@ -8,23 +8,23 @@ public class DocumentRecord {
     private int id;
     //关联历史文件id
     private String historyDocumentId;
-    //文件名称
+    //文件名称(必填)
     private String documentName;
-    //文件密等
+    //文件密等(必填)
     private String documentSecretLevel;
-    //文件编号
+    //文件编号(必填)
     private String documentReleaseNumber;
-    //发布时间
+    //发布时间(必填)
     private String documentReleaseTime;
-    //用户姓名
+    //用户姓名(必填)
     private String operatorName;
     //操作说明
     private String operateRemarks;
-    //文件正文
+    //文件正文(必填)
     private String documentText;
     //文件图片(列表形式)
     private List<String> pictureData;
-    //标志图片是否有改动
+    //图片修改标志位
     private boolean pictureFlag;
 
     public int getId() {
