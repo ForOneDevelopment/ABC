@@ -15,4 +15,6 @@ public interface DocumentService {
     Document get(int id);
 
     int update(DocumentRecord record);
+
+    List<Document> search(String keyword);
 }

@@ -9,8 +9,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -102,6 +104,26 @@ public class DocumentController {
         documentService.update(record);
         restResponse.setCode(200);
         restResponse.setMessage("上传编辑后的数据成功！");
+        try {
+            result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
+        }catch (Exception e3){
+            logger.error("e3 updateDocument 后台回应转JSON数据失败: ");
+            //e3.printStackTrace();
+            return "后台回应转JSON数据失败!";
+        }
+        return result;
+    }
+
+    @RequestMapping("/document/search")
+    public String searchDocument(@RequestBody String keywordString) {
+        logger.info("search Document!");
+        RestResponse restResponse = new RestResponse();
+        String result;
+        //获取到关键词字符串，执行业务代码
+        List searchResult = documentService.search(keywordString);
+        restResponse.setCode(200);
+        restResponse.setMessage("搜索成功！");
+        restResponse.setData(searchResult);
         try {
             result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(restResponse);
         }catch (Exception e3){

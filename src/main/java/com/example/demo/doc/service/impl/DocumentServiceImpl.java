@@ -112,4 +112,15 @@ public class DocumentServiceImpl implements DocumentService {
         return id;
     }
 
+    @Override
+    public List<Document> search(String keyword){
+        DocumentExample example = new DocumentExample();
+        example.createCriteria().andDocumentNameLike("%" + keyword + "%");
+        example.setOrderByClause("id desc");
+        List searchResult = documentMapper.selectByExample(example);
+//        setFirstProductImage(result);
+//        setCategory(result);
+        return searchResult;
+    }
+
 }
